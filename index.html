@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کافه ساندویچ چاپلین | Chaplin Cafe Sandwich</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --charcoal: #1A1A1A;
+    --deep: #0D0D0D;
+    --cream: #F5EED8;
+    --gold: #C9973A;
+    --red: #C23B22;
+    --chalk: #FAFAF7;
+    --mid: #5A5A5A;
+    --stripe: rgba(255,255,255,0.04);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--charcoal);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── FILM STRIP EDGE ── */
+  .filmstrip {
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 36px;
+    background: var(--deep);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    gap: 0;
+  }
+  .filmstrip.left { left: 0; }
+  .filmstrip.right { right: 0; }
+  .hole {
+    width: 18px; height: 14px;
+    border-radius: 3px;
+    background: var(--charcoal);
+    border: 1px solid #333;
+    flex-shrink: 0;
+  }
+
+  main { margin: 0 36px; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.15) 3px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* grain overlay */
+  #hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  /* Chaplin SVG icon */
+  .chaplin-icon {
+    width: 120px; height: 120px;
+    margin: 0 auto 24px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 9vw, 110px);
+    font-weight: 900;
+    line-height: 0.95;
+    color: var(--chalk);
+    letter-spacing: -2px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.5s;
+  }
+
+  .hero-title span { color: var(--gold); }
+
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--cream);
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.7s;
+  }
+
+  .hero-stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 28px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.9s;
+  }
+  .star { color: var(--gold); font-size: 22px; }
+  .star-label {
+    font-size: 13px;
+    color: var(--mid);
+    letter-spacing: 1px;
+    margin-right: 4px;
+  }
+
+  .hero-divider {
+    width: 60px; height: 2px;
+    background: var(--gold);
+    margin: 32px auto;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 1s;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 1.1s;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--deep);
+    border: 2px solid var(--gold);
+  }
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--gold);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  .btn-outline:hover {
+    border-color: var(--cream);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TICKER ── */
+  .ticker {
+    background: var(--gold);
+    color: var(--deep);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-flex;
+    gap: 60px;
+    animation: ticker 22s linear infinite;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 40px; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 700;
+    color: var(--chalk);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  @media (max-width: 768px) {
+    #about { grid-template-columns: 1fr; gap: 40px; }
+    section { padding: 70px 20px; }
+    main { margin: 0 26px; }
+    .filmstrip { width: 26px; }
+    .hole { width: 14px; height: 11px; }
+  }
+
+  .about-text p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(245, 238, 216, 0.75);
+    margin-bottom: 16px;
+  }
+
+  .about-visual {
+    position: relative;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Film reel SVG animation */
+  .reel {
+    animation: spin 10s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* ── MENU CARDS ── */
+  #menu { text-align: center; }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    max-width: 1000px;
+    margin: 50px auto 0;
+  }
+  .menu-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 32px 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+  .menu-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: right;
+  }
+  .menu-card:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-4px);
+  }
+  .menu-card:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .card-icon { font-size: 36px; margin-bottom: 16px; }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--chalk);
+    margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: rgba(245,238,216,0.55);
+    line-height: 1.6;
+  }
+
+  /* ── INFO STRIP ── */
+  #info {
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .info-item { text-align: center; }
+  .info-item .ico { font-size: 28px; margin-bottom: 12px; }
+  .info-item h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .info-item p {
+    font-size: 13px;
+    color: rgba(245,238,216,0.6);
+    line-height: 1.6;
+  }
+  .info-item a {
+    color: rgba(245,238,216,0.6);
+    text-decoration: none;
+  }
+  .info-item a:hover { color: var(--gold); }
+
+  /* ── REVIEWS ── */
+  #reviews { text-align: center; }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1000px;
+    margin: 50px auto 0;
+    text-align: right;
+  }
+  .review-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 28px;
+    border-radius: 4px;
+    position: relative;
+  }
+  .review-quote {
+    font-size: 48px;
+    color: var(--gold);
+    opacity: 0.2;
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+    margin-bottom: -10px;
+  }
+  .review-text {
+    font-size: 14px;
+    color: rgba(245,238,216,0.75);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .reviewer {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: var(--gold);
+  }
+  .review-stars { color: var(--gold); font-size: 13px; margin-bottom: 12px; }
+
+  /* Big rating display */
+  .big-rating {
+    font-family: 'Playfair Display', serif;
+    font-size: 120px;
+    font-weight: 900;
+    color: var(--chalk);
+    line-height: 1;
+    position: relative;
+    display: inline-block;
+  }
+  .big-rating::after {
+    content: '/5';
+    font-size: 30px;
+    color: var(--gold);
+    position: absolute;
+    bottom: 20px;
+    right: -40px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--deep);
+    padding: 60px 40px 40px;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--chalk);
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-sub {
+    font-size: 12px;
+    color: var(--mid);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .footer-copy {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1px;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Clapperboard open animation */
+  @keyframes clap {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(-15deg); }
+    20%  { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+  }
+  .clap-anim { animation: clap 3s ease-in-out infinite; transform-origin: left center; }
+
+  /* ── MENU TABS ── */
+  .menu-tabs {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 36px 0 48px;
+  }
+  .menu-tab {
+    background: transparent;
+    color: rgba(245,238,216,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 12px 30px;
+    font-size: 14px;
+    font-family: inherit;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 1px;
+  }
+  .menu-tab:hover { border-color: var(--gold); color: var(--gold); }
+  .menu-tab.active {
+    background: var(--gold);
+    color: var(--deep);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ── MENU PANELS ── */
+  .menu-panel {
+    display: none;
+    max-width: 780px;
+    margin: 0 auto;
+    animation: panelIn 0.35s ease;
+  }
+  .menu-panel.active { display: block; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MENU ITEMS ── */
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 20px;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .mi-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--chalk);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .menu-item.gold .mi-name { color: var(--gold); }
+  .mi-dots {
+    flex: 1;
+    border-bottom: 1px dotted rgba(255,255,255,0.15);
+    margin: 0 12px;
+    position: relative;
+    top: -4px;
+  }
+  .mi-desc {
+    font-size: 12px;
+    color: rgba(245,238,216,0.4);
+    text-align: left;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .menu-item { flex-direction: column; gap: 6px; }
+    .mi-dots { display: none; }
+    .mi-desc { text-align: right; max-width: 100%; }
+    .menu-tab { padding: 10px 18px; font-size: 13px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Film strip edges -->
+<div class="filmstrip left" id="fs-left"></div>
+<div class="filmstrip right" id="fs-right"></div>
+
+<main>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-content">
+
+    <!-- Chaplin SVG face -->
+    <div class="chaplin-icon">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bowler hat -->
+        <ellipse cx="60" cy="34" rx="36" ry="8" fill="#1A1A1A" stroke="#C9973A" stroke-width="1.5"/>
+        <rect x="36" y="10" width="48" height="26" rx="24" fill="#1A1A1A"/>
+        <ellipse cx="60" cy="10" rx="20" ry="6" fill="#1A1A1A"/>
+        <!-- Head -->
+        <ellipse cx="60" cy="62" rx="28" ry="30" fill="#F5EED8"/>
+        <!-- Eyes -->
+        <circle cx="50" cy="56" r="5" fill="#1A1A1A"/>
+        <circle cx="70" cy="56" r="5" fill="#1A1A1A"/>
+        <circle cx="52" cy="54" r="1.5" fill="white"/>
+        <circle cx="72" cy="54" r="1.5" fill="white"/>
+        <!-- Toothbrush mustache -->
+        <rect x="53" y="70" width="14" height="7" rx="2" fill="#1A1A1A"/>
+        <!-- Smile -->
+        <path d="M 45 80 Q 60 92 75 80" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>
+        <!-- Cane hint -->
+        <line x1="90" y1="95" x2="95" y2="115" stroke="#C9973A" stroke-width="2.5" stroke-linecap="round"/>
+        <ellipse cx="90" cy="93" rx="5" ry="3" fill="none" stroke="#C9973A" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <p class="hero-eyebrow">تهران · منطقه یک · خیابان کریمی . کوچه عباسی </p>
+
+    <h1 class="hero-title">
+      <span>چ</span>اپلین
+    </h1>
+    <p class="hero-subtitle">کافه ساندویچ چاپلین · Chaplin Cafe Sandwich</p>
+
+    <div class="hero-stars">
+      <span class="star-label">۴ نظر</span>
+      <span class="star">★★★★★</span>
+      <strong style="font-size:18px; color:var(--gold)">۵.۰</strong>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-cta">
+      <a href="#menu" class="btn btn-primary">منو ما</a>
+      <a href="#info" class="btn btn-outline">اطلاعات تماس</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── TICKER ── -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>🎬 ساندویچ تازه</span>
+    <span>⭐ امتیاز کامل ۵ از ۵</span>
+    <span>🎩 کافه چاپلین</span>
+    <span>🥪 کیفیت بالا · قیمت مناسب</span>
+    <span>🎬 Fresh Sandwiches</span>
+    <span>⭐ 5.0 Rating</span>
+    <span>🎩 Chaplin Cafe</span>
+    <span>🥪 Quality · Value</span>
+    <span>🎬 ساندویچ تازه</span>
+    <span>⭐ امتیاز کامل ۵ از ۵</span>
+    <span>🎩 کافه چاپلین</span>
+    <span>🥪 کیفیت بالا · قیمت مناسب</span>
+    <span>🎬 Fresh Sandwiches</span>
+    <span>⭐ 5.0 Rating</span>
+    <span>🎩 Chaplin Cafe</span>
+    <span>🥪 Quality · Value</span>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<section>
+  <div id="about" class="reveal">
+    <div class="about-text">
+      <p class="section-label">درباره ما · About Us</p>
+      <h2 class="section-title">کلاسیک، تازه، بی‌نظیر</h2>
+      <p>کافه ساندویچ چاپلین با الهام از روح بازیگوش و ظریف چارلی چاپلین، تجربه‌ای متفاوت از لذت غذا خوردن را برای شما به ارمغان می‌آورد.</p>
+      <p>هر ساندویچ ما، مثل یک فیلم کلاسیک، با دقت و عشق ساخته شده تا لحظه‌ای ماندگار در ذهن شما بسازد.</p>
+      <p style="font-size:13px; color:var(--gold); letter-spacing:1px;">Good quality and reasonable price — since always.</p>
+    </div>
+
+    <!-- Animated film reel -->
+    <div class="about-visual">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="280" height="280">
+        <!-- Outer ring -->
+        <circle cx="150" cy="150" r="130" fill="none" stroke="#333" stroke-width="12"/>
+        <!-- Rotating reel group -->
+        <g class="reel" style="transform-origin:150px 150px">
+          <!-- Spokes -->
+          <line x1="150" y1="40" x2="150" y2="80" stroke="#C9973A" stroke-width="4"/>
+          <line x1="150" y1="220" x2="150" y2="260" stroke="#C9973A" stroke-width="4"/>
+          <line x1="40" y1="150" x2="80" y2="150" stroke="#C9973A" stroke-width="4"/>
+          <line x1="220" y1="150" x2="260" y2="150" stroke="#C9973A" stroke-width="4"/>
+          <line x1="77" y1="77" x2="105" y2="105" stroke="#C9973A" stroke-width="4"/>
+          <line x1="195" y1="195" x2="223" y2="223" stroke="#C9973A" stroke-width="4"/>
+          <line x1="223" y1="77" x2="195" y2="105" stroke="#C9973A" stroke-width="4"/>
+          <line x1="77" y1="223" x2="105" y2="195" stroke="#C9973A" stroke-width="4"/>
+          <!-- Sprocket holes around ring -->
+          <circle cx="150" cy="52" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="150" cy="248" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="52" cy="150" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="248" cy="150" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="89" cy="89" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="211" cy="211" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="211" cy="89" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+          <circle cx="89" cy="211" r="10" fill="#0D0D0D" stroke="#C9973A" stroke-width="2"/>
+        </g>
+        <!-- Center hub -->
+        <circle cx="150" cy="150" r="42" fill="#1A1A1A" stroke="#C9973A" stroke-width="3"/>
+        <circle cx="150" cy="150" r="18" fill="#0D0D0D" stroke="#333" stroke-width="2"/>
+        <!-- Chaplin hat silhouette in center -->
+        <text x="150" y="158" text-anchor="middle" font-size="24" fill="#C9973A">🎩</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ── MENU HIGHLIGHTS ── -->
+<section id="menu">
+  <div class="reveal">
+    <p class="section-label" style="text-align:center">آنچه سرو می‌کنیم</p>
+    <h2 class="section-title" style="text-align:center">ستاره‌های منو</h2>
+
+    <div class="menu-tabs">
+      <button class="menu-tab active" onclick="showTab(this,'sandwiches')">🥪 ساندویچ</button>
+      <button class="menu-tab" onclick="showTab(this,'burgers')">🍔 برگر</button>
+      <button class="menu-tab" onclick="showTab(this,'salads')">🥗 سالاد و پیش‌غذا</button>
+    </div>
+
+    <!-- SANDWICHES -->
+    <div id="tab-sandwiches" class="menu-panel active">
+      <div class="menu-item featured"><div class="mi-name">رست بیف</div><div class="mi-desc">کوشت کوساله · قارچ · پنیر موزارلا · پیازجعفری · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">ژامبون تنوری</div><div class="mi-desc">ژامبون کوشت ۹۰٪ · اندره · قارچ · پنیر · کاهو · خیارشور · سس مخصوص</div></div>
+      <div class="menu-item gold"><div class="mi-name">فیله ویژه</div><div class="mi-desc">فیله مرغ گریل شده · قارچ · پنیر موزارلا · پیازجعفری · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">فیله</div><div class="mi-desc">فیله مرغ گریل · پیازجعفری · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">فیله سوخاری</div><div class="mi-desc">فیله مرغ سوخاری · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item gold"><div class="mi-name">کوکتل پنیری ویژه</div><div class="mi-desc">کوکتل پنیری · قارچ · پنیر · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">کوکتل پنیری</div><div class="mi-desc">کوکتل پنیری · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item gold"><div class="mi-name">هات داگ ویژه</div><div class="mi-desc">سوسیس اندره · قارچ · پنیر موزارلا · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">هات داگ</div><div class="mi-desc">سوسیس اندره · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">ژامبون کوشت</div><div class="mi-desc">ژامبون کوشت ۹۰٪ · اندره · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+    </div>
+
+    <!-- BURGERS -->
+    <div id="tab-burgers" class="menu-panel">
+      <div class="menu-item gold"><div class="mi-name">رویال برگر</div><div class="mi-desc">برگر ۱۰۰٪ کوشت تازه · فیله مرغ گریل شده · ژامبول کوشت ۹۰٪ · اندره · قارچ · پنیر موزارلا · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">دوبل برگر</div><div class="mi-desc">دو لایه کوشت ۱۰۰٪ تازه · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">ماشروم برگر</div><div class="mi-desc">برگر ۱۰۰٪ کوشت تازه · پنیر کودا · پنیر موزارلا · قارچ · کاهو · خیارشور · کوچه</div></div>
+      <div class="menu-item"><div class="mi-name">دبل ماشروم برگر</div><div class="mi-desc">دو لایه کوشت ۱۰۰٪ تازه · پنیر کودا · پنیر موزارلا · قارچ · کاهو · خیارشور · کوچه</div></div>
+      <div class="menu-item gold"><div class="mi-name">چیز برگر</div><div class="mi-desc">برگر ۱۰۰٪ کوشت تازه · پنیر کودا · پنیر موزارلا · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">دبل چیز برگر</div><div class="mi-desc">دو لایه برگر کوشت ۱۰۰٪ · پنیر کودا · پنیر موزارلا · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">همبرگر</div><div class="mi-desc">برگر ۱۰۰٪ کوشت تازه · کاهو · خیارشور · کوچه · سس مخصوص</div></div>
+    </div>
+
+    <!-- SALADS & SIDES -->
+    <div id="tab-salads" class="menu-panel">
+      <div class="menu-item gold"><div class="mi-name">سالاد چارلی (گریل)</div><div class="mi-desc">۲ عدد فیله مرغ گریل · پنیر پارمسان · کاپاریس · نان تست شده · زیتون · کاهو · کوچه · سس مخصوص</div></div>
+      <div class="menu-item gold"><div class="mi-name">سالاد چارلی (سوخاری)</div><div class="mi-desc">۲ عدد فیله مرغ سوخاری · پنیر پارمسان · کاپاریس · نان تست شده · زیتون · کاهو · کوچه</div></div>
+      <div class="menu-item"><div class="mi-name">سالاد فصل</div><div class="mi-desc">سبزیجات تازه فصل با سس مخصوص</div></div>
+      <div class="menu-item gold"><div class="mi-name">سیب‌زمینی ویژه</div><div class="mi-desc">سیب‌زمینی سرخ شده با چاشنی‌های مخصوص</div></div>
+      <div class="menu-item"><div class="mi-name">سیب‌زمینی ساده</div><div class="mi-desc">سیب‌زمینی سرخ شده</div></div>
+      <div class="menu-item"><div class="mi-name">فیله سوخاری پرسی</div><div class="mi-desc">۳ تکه فیله سوخاری · سیب‌زمینی · نان</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── INFO ── -->
+<section id="info">
+  <div class="info-grid reveal">
+
+    <div class="info-item">
+      <div class="ico">📍</div>
+      <h3>آدرس</h3>
+      <p>تهران، منطقه ۱<br>خیابان کریمی<br>عباسی</p>
+    </div>
+
+    <div class="info-item">
+      <div class="ico">🕐</div>
+      <h3>ساعات کاری</h3>
+      <p>هر روز باز<br>تا ساعت 00:00
+      </p>
+    </div>
+
+    <div class="info-item">
+      <div class="ico">📞</div>
+      <h3>تماس</h3>
+      <p><a href="tel:+982122391203">02122391203</a></p>
+    </div>
+
+    <div class="info-item">
+      <div class="ico">🍽️</div>
+      <h3>سرویس</h3>
+      <p>دایین · تیک‌اوت<br>دلیوری</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── REVIEWS ── -->
+<section id="reviews">
+  <div class="reveal">
+    <p class="section-label">نظرات مشتریان · Reviews</p>
+    <h2 class="section-title">آنچه می‌گویند</h2>
+
+    <div style="margin:40px 0 20px">
+      <div class="big-rating">5</div>
+      <div style="margin-top:12px; color:var(--gold); font-size:28px;">★★★★★</div>
+      <p style="color:var(--mid); font-size:12px; letter-spacing:2px; margin-top:8px; text-transform:uppercase;">۴ نظر تأیید شده</p>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-quote">"</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">کیفیت بالا و قیمت مناسب دو فاکتور کلیدی برای انتخاب یک غذای ایده‌آل هستند — اینجا هر دو را دارید.</p>
+        <span class="reviewer">فریبرز خان · Local Guide</span>
+      </div>
+
+      <div class="review-card">
+        <div class="review-quote">"</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">غذا: ۵ | سرویس: ۵<br>یک تجربه کاملاً رضایت‌بخش. محیط دنج و کارکنان مهربان.</p>
+        <span class="reviewer">وحید والی‌زاده</span>
+      </div>
+
+      <div class="review-card">
+        <div class="review-quote">"</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">دایین در کافه چاپلین یک تجربه خاص است. ساندویچ‌ها تازه و خوشمزه بودند.</p>
+        <span class="reviewer">کیان کردونی</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo"><span>چ</span>اپلین</div>
+  <div class="footer-sub">Chaplin Cafe Sandwich · Tehran</div>
+  <div class="footer-copy">© کافه ساندویچ چاپلین · تمام حقوق محفوظ است</div>
+</footer>
+
+</main>
+
+<script>
+
+  function showTab(btn, tabId) {
+    document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Generate film strip holes
+  function fillStrip(id) {
+    const el = document.getElementById(id);
+    const count = Math.ceil(window.innerHeight / 28);
+    let html = '';
+    for (let i = 0; i < count; i++) html += '<div class="hole"></div>';
+    el.innerHTML = html;
+  }
+  fillStrip('fs-left');
+  fillStrip('fs-right');
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(r => io.observe(r));
+
+  // Smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
